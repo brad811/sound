@@ -7,7 +7,7 @@ var c = document.getElementById("soundCanvas");
 var ctx = c.getContext("2d");
 
 var errorCallback = function(e) {
-	console.log('Reeeejected!', e);
+	console.log('Could not get user media!', e);
 };
 
 var successCallback = function(stream) {
@@ -53,7 +53,7 @@ var analyze = function() {
 		);
 	}
 
-	setTimeout(analyze, 1);
+	setTimeout(analyze, 10);
 }
 
 navigator.getUserMedia = navigator.getUserMedia ||
