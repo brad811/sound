@@ -12,3 +12,11 @@ canvas {
 	margin-left: -400px;
 	margin-top: -256px;
 }
+
+#error {
+  color: #888;
+  font-size: 4em;
+  background-color: #000;
+  text-align: center;
+  display: none;
+}

@@ -3,11 +3,19 @@ var analyzer = null;
 var input = null;
 var audioContext = null;
 
-var c = document.getElementById("soundCanvas");
-var ctx = c.getContext("2d");
+var c = document.getElementById('soundCanvas');
+var ctx = c.getContext('2d');
+
+var errorDiv = document.getElementById('error');
+
+var showError = function() {
+	c.style.display = 'none';
+	errorDiv.style.display = 'block';
+};
 
 var errorCallback = function(e) {
 	console.log('Could not get user media!', e);
+	showError();
 };
 
 var successCallback = function(stream) {
@@ -28,7 +36,7 @@ var analyze = function() {
 	analyzer.getByteFrequencyData(freqByteData);
 
 	ctx.clearRect(0, 0, c.width, c.height);
-	ctx.fillStyle = "#000000";
+	ctx.fillStyle = '#000000';
 	ctx.fillRect(0, 0, c.width, c.height);
 
 	var scaleX = (c.width/1024) * 1.4;
@@ -46,7 +54,7 @@ var analyze = function() {
 		);
 
 		// draw gray bottom half
-		ctx.fillStyle = "#444444";
+		ctx.fillStyle = '#444444';
 		ctx.fillRect(
 			xPos, (256 + yOffset) * scaleY,
 			Math.ceil(scaleX), freqByteData[i] * scaleY / 2
@@ -56,34 +64,27 @@ var analyze = function() {
 	setTimeout(analyze, 10);
 }
 
-navigator.getUserMedia = navigator.getUserMedia ||
-						navigator.webkitGetUserMedia ||
-						navigator.mozGetUserMedia ||
-						navigator.msGetUserMedia;
+if (navigator.mediaDevices) {
+	navigator.mediaDevices.enumerateDevices().then(function (sources) {
+		var audioSources = sources.filter(function (source) {
+			console.log('source: ' + source.kind);
+			return source.kind === 'audioinput';
+		});
+		console.log('audio input sources', audioSources);
 
-MediaStreamTrack.getSources(function(sourceInfos) {
-	var audioSource = null;
+		var constraints = {
+			audio: {
+				optional: [{sourceId: audioSources[0]}]
+			}
+		};
 
-	for (var i = 0; i != sourceInfos.length; ++i) {
-		var sourceInfo = sourceInfos[i];
-		if (sourceInfo.kind === 'audio') {
-			console.log(sourceInfo.id, sourceInfo.label || 'microphone');
-			audioSource = sourceInfo.id;
-		} else if(sourceInfo.kind === 'video') {
-			console.log(sourceInfo.id, sourceInfo.label || 'camera');
-		} else {
-			console.log('Some other kind of source: ', sourceInfo);
-		}
-	}
-
-	var constraints = {
-		audio: {
-			optional: [{sourceId: audioSource}]
-		}
-	};
-
-	navigator.getUserMedia(constraints, successCallback, errorCallback);
-});
+		navigator.mediaDevices.getUserMedia(constraints)
+			.then(successCallback)
+			.catch(errorCallback);
+	});
+} else {
+	showError();
+}
 
 var hsv2rgb = function(h, s, v) {
 	var rgb, i, data = [];
@@ -115,7 +116,7 @@ var hsv2rgb = function(h, s, v) {
 		}
 	}
 	return '#' + rgb.map(function(x){
-		return ("0" + Math.round(x*255).toString(16)).slice(-2);
+		return ('0' + Math.round(x*255).toString(16)).slice(-2);
 	}).join('');
 };
 
@@ -127,13 +128,13 @@ var resizeCanvas = function() {
 		x = w.innerWidth || e.clientWidth || g.clientWidth,
 		y = w.innerHeight|| e.clientHeight|| g.clientHeight;
 
-	c.style.width = x + "px";
-	c.style.height = y + "px";
+	c.style.width = x + 'px';
+	c.style.height = y + 'px';
 
-	c.style.marginLeft = -x * 0.5 + "px";
-	c.style.marginTop = -y * 0.5 + "px";
+	c.style.marginLeft = -x * 0.5 + 'px';
+	c.style.marginTop = -y * 0.5 + 'px';
 
-	ctx.canvas.width	= x;
+	ctx.canvas.width  = x;
 	ctx.canvas.height = y;
 }
 
