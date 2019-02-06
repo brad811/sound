@@ -3,4 +3,4 @@ Audio input visualizer using HTML5
 
 ![alt tag](http://i.imgur.com/kk5wPGI.png)
 
-Demo: http://bradsproject.com/sound/
+Demo: http://bradjewell.com/sound/
